@@ -1,5 +1,6 @@
 import os
 import csv
+import json
 import subprocess
 
 def install_python_with_pip():
@@ -7,48 +8,46 @@ def install_python_with_pip():
     print("Installing Python and pip...")
     subprocess.run(['yum', 'install', '-y', 'python3', 'python3-pip'], check=True)
 
+def remove_python_with_pip():
+    # Remove Python and pip using yum
+    print("Removing Python and pip...")
+    subprocess.run(['yum', 'remove', '-y', 'python3', 'python3-pip'], check=True)
+
 def update_package(distro, package, fixed_version, package_type):
-    # Remove leading and trailing whitespace from distro
+    # Remove leading and trailing whitespace from distro and package_type
     distro = distro.strip()
-    package_type = package_type.strip()
 
     print(f"Distro: '{distro}'")
     print(f"Package: '{package}'")
     print(f"Package Type: '{package_type}'")
-    print(f"Distro Lower: '{distro.lower()}'")
-    print(f"repr(distro): '{repr(distro)}'")  # Shows hidden characters
-    print(f"Distro Lower == 'redhat': {distro.lower() == 'redhat'}")
 
     if package_type.lower() == 'python':
-        if distro.lower() in ['centos', 'redhat', 'fedora']:
-            install_python_with_pip()
+        install_python_with_pip()
         # Print and run pip command for Python packages
         command = ['pip3', 'install', f'{package}=={fixed_version}']
         print(f"Executing command: {' '.join(command)}")
         subprocess.run(command, check=True)
-    elif distro.lower() in ['ubuntu', 'debian']:
-        # Print and run apt-get commands for Ubuntu/Debian
-        update_command = ['apt-get', 'update']
-        install_command = ['apt-get', 'install', f'{package}={fixed_version}', '-y']
-        print(f"Executing command: {' '.join(update_command)}")
-        subprocess.run(update_command, check=True)
-        print(f"Executing command: {' '.join(install_command)}")
-        subprocess.run(install_command, check=True)
-    elif distro.lower() in ['centos', 'redhat', 'fedora']:
-        # Print and run yum commands for CentOS/RedHat/Fedora
+        remove_python_with_pip()
+    elif package_type.lower() == 'package':
+        # Print and run yum commands for general packages
         update_command = ['yum', 'update', package, '-y']
         install_command = ['yum', 'install', f'{package}-{fixed_version}', '-y']
         print(f"Executing command: {' '.join(update_command)}")
         subprocess.run(update_command, check=True)
         print(f"Executing command: {' '.join(install_command)}")
         subprocess.run(install_command, check=True)
-    elif distro.lower() == 'arch':
-        # Print and run pacman command for Arch
-        command = ['pacman', '-Syu', package, '--noconfirm']
-        print(f"Executing command: {' '.join(command)}")
-        subprocess.run(command, check=True)
     else:
-        raise ValueError(f"Unsupported distribution: {distro}")
+        raise ValueError(f"Unsupported package type: {package_type}")
+
+def get_package_type(package_name):
+    with open('/tmp/tpackage-json.txt', 'r') as file:
+        data = json.load(file)
+        for repo, content in data.items():
+            for pkg_group in content['packages']:
+                for pkg in pkg_group['pkgs']:
+                    if pkg['name'] == package_name:
+                        return pkg_group['pkgsType']
+    return None
 
 def main():
     csv_file = '/tmp/scan.csv'
@@ -57,8 +56,11 @@ def main():
         for row in csv_reader:
             if row['Status'].startswith('fixed in'):
                 fixed_version = row['Status'].split(' ')[-1]
-                # Pass the PackageType to the update_package function
-                update_package(row['Distro'], row['Package'], fixed_version, row['PackageType'])
+                package_type = get_package_type(row['Package'])
+                if package_type:
+                    update_package(row['Distro'], row['Package'], fixed_version, package_type)
+                else:
+                    print(f"Package type for {row['Package']} not found.")
             elif row['Status'] == 'affected':
                 print(f"Package {row['Package']} in {row['Distro']} is affected by {row['CVE ID']} but no fixed version specified.")
 

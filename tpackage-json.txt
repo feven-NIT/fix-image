@@ -1,0 +1,68 @@
+{
+    "openshift.artifactory.mycloud.intranatixis.com/ubi8/php-72:1": {
+        "binaries": [
+            {
+                "name": "ab",
+                "path": "/usr/bin/ab",
+                "md5": "56582c01259e7d18ded2444c7a2bfce1",
+                "cveCount": 0,
+                "fileMode": 493
+            }
+        ],
+        "packages": [
+            {
+                "pkgsType": "package",
+                "pkgs": [
+                    {
+                        "version": "4.18.0-240.22.1.el8_3",
+                        "name": "kernel-headers",
+                        "cveCount": 2398,
+                        "license": "GPLv2 and Redistributable, no modification permitted",
+                        "layerTime": 0,
+                        "originPackageName": "",
+                        "purl": "pkg:rpm/redhat/kernel-headers@4.18.0-240.22.1.el8_3"
+                    }
+                ]
+            },
+            {
+                "pkgsType": "nodejs",
+                "pkgs": [
+                    {
+                        "version": "1.9.1",
+                        "name": "color-convert",
+                        "path": "/usr/lib/node_modules/npm/node_modules/color-convert",
+                        "cveCount": 0,
+                        "license": "MIT",
+                        "layerTime": 0,
+                        "originPackageName": "",
+                        "purl": "pkg:npm/color-convert@1.9.1"
+                    }
+                ]
+            },
+            {
+                "pkgsType": "python",
+                "pkgs": [
+                    {
+                        "version": "2.20.0",
+                        "name": "requests",
+                        "path": "/usr/lib/python3.6/site-packages/requests-2.20.0-py3.6.egg-info",
+                        "cveCount": 36,
+                        "license": "Apache 2.0",
+                        "layerTime": 0,
+                        "originPackageName": "",
+                        "purl": "pkg:pypi/requests@2.20.0"
+                    },
+                                        {
+                        "version": "1.26.5",
+                        "name": "urllib3",
+                        "path": "/usr/lib/python3.9/site-packages/urllib3.egg-info",
+                        "cveCount": 12,
+                        "license": "MIT",
+                        "layerTime": 0,
+                        "originPackageName": "",
+                        "purl": "pkg:pypi/urllib3@1.26.5"
+                    }
+                ]
+            }
+        ]
+    }
