@@ -1,5 +1,5 @@
 # Utiliser une image de base spécifiée par une variable d'environnement
-FROM ${BASE_IMAGE}
+FROM random
 
 # Copier le script de mise à jour des paquets dans l'image
 COPY update_packages.py /tmp/update_packages.py
