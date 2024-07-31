@@ -3,10 +3,11 @@ import csv
 import subprocess
 
 def update_package(distro, package, fixed_version):
-    print(distro);
-    print(package);
-    print(distro.lower())
-    print(distro.lower() == "redhat")
+    print(f"Distro: {distro}")
+    print(f"Package: {package}")
+    print(f"Distro Lower: {distro.lower()}")
+    print(f"repr(distro): {repr(distro)}")  # Shows hidden characters
+    print(f"Distro Lower == 'redhat': {distro.lower() == 'redhat'}")
     if distro.lower() in ['ubuntu', 'debian', 'redhat']:
         print('test');
         subprocess.run(['apt-get', 'update'], check=True)
