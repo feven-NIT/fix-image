@@ -8,7 +8,7 @@ def update_package(distro, package, fixed_version, package_type):
     package_type = package_type.strip()
 
     print(f"Distro: '{distro}'")
-    print(f"Package: '{package}'")
+    print(f"Package: '{package_type}'")
     print(f"Package Type: '{package_type}'")
     print(f"Distro Lower: '{distro.lower()}'")
     print(f"repr(distro): '{repr(distro)}'")  # Shows hidden characters
