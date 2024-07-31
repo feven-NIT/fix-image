@@ -14,18 +14,32 @@ def update_package(distro, package, fixed_version, package_type):
     print(f"repr(distro): '{repr(distro)}'")  # Shows hidden characters
     print(f"Distro Lower == 'redhat': {distro.lower() == 'redhat'}")
 
-    # Handle package update based on distro and package type
     if package_type.lower() == 'python':
-        # Install Python packages with pip
-        subprocess.run(['pip', 'install', f'{package}=={fixed_version}'], check=True)
+        # Print and run pip command for Python packages
+        command = ['pip', 'install', f'{package}=={fixed_version}']
+        print(f"Executing command: {' '.join(command)}")
+        subprocess.run(command, check=True)
     elif distro.lower() in ['ubuntu', 'debian']:
-        subprocess.run(['apt-get', 'update'], check=True)
-        subprocess.run(['apt-get', 'install', f'{package}={fixed_version}', '-y'], check=True)
+        # Print and run apt-get commands for Ubuntu/Debian
+        update_command = ['apt-get', 'update']
+        install_command = ['apt-get', 'install', f'{package}={fixed_version}', '-y']
+        print(f"Executing command: {' '.join(update_command)}")
+        subprocess.run(update_command, check=True)
+        print(f"Executing command: {' '.join(install_command)}")
+        subprocess.run(install_command, check=True)
     elif distro.lower() in ['centos', 'redhat', 'fedora']:
-        subprocess.run(['yum', 'update', package, '-y'], check=True)
-        subprocess.run(['yum', 'install', f'{package}-{fixed_version}', '-y'], check=True)
+        # Print and run yum commands for CentOS/RedHat/Fedora
+        update_command = ['yum', 'update', package, '-y']
+        install_command = ['yum', 'install', f'{package}-{fixed_version}', '-y']
+        print(f"Executing command: {' '.join(update_command)}")
+        subprocess.run(update_command, check=True)
+        print(f"Executing command: {' '.join(install_command)}")
+        subprocess.run(install_command, check=True)
     elif distro.lower() == 'arch':
-        subprocess.run(['pacman', '-Syu', package, '--noconfirm'], check=True)
+        # Print and run pacman command for Arch
+        command = ['pacman', '-Syu', package, '--noconfirm']
+        print(f"Executing command: {' '.join(command)}")
+        subprocess.run(command, check=True)
     else:
         raise ValueError(f"Unsupported distribution: {distro}")
 
