@@ -1,5 +1,4 @@
 # Utiliser une image de base spécifiée par une variable d'environnement
-ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 
 # Copier le script de mise à jour des paquets dans l'image

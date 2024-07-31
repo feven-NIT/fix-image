@@ -10,10 +10,10 @@ spec:
       name: "quay.io/neutron-it/fixed-image:latest"
     pushSecret:
       name: florian-even-pull-secret
-    strategy:
-      type: Docker
-      dockerStrategy:
-        dockerfilePath: Dockerfile
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: Dockerfile
   source:
     type: Git
     git:
@@ -21,3 +21,6 @@ spec:
     contextDir: /
     sourceSecret:
       name: github-deploy-key
+  env:
+    - name: BASE_IMAGE
+      value: "registry.redhat.io/repo1/example"
