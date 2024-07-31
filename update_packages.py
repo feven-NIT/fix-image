@@ -6,7 +6,7 @@ def update_package(distro, package, fixed_version):
     print(distro);
     print(package);
     print(distro.lower())
-    print(distro.lower() == 'redhat')
+    print(distro.lower() == "redhat")
     if distro.lower() in ['ubuntu', 'debian', 'redhat']:
         print('test');
         subprocess.run(['apt-get', 'update'], check=True)
