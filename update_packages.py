@@ -13,6 +13,16 @@ def remove_python_with_pip():
     print("Removing Python and pip...")
     subprocess.run(['yum', 'remove', '-y', 'python3-pip'], check=True)
 
+def install_node_with_npm():
+    # Install Node.js and npm using yum
+    print("Installing Node.js and npm...")
+    subprocess.run(['yum', 'install', '-y', 'nodejs', 'npm'], check=True)
+
+def remove_node_with_npm():
+    # Remove Node.js and npm using yum
+    print("Removing Node.js and npm...")
+    subprocess.run(['yum', 'remove', '-y', 'nodejs', 'npm'], check=True)
+
 def update_package(distro, package, fixed_version, package_type):
     # Remove leading and trailing whitespace from distro and package_type
     distro = distro.strip()
@@ -28,6 +38,13 @@ def update_package(distro, package, fixed_version, package_type):
         print(f"Executing command: {' '.join(command)}")
         subprocess.run(command, check=True)
         remove_python_with_pip()
+    elif package_type.lower() == 'nodejs':
+        install_node_with_npm()
+        # Print and run npm command for Node.js packages
+        command = ['npm', 'install', f'{package}@{fixed_version}']
+        print(f"Executing command: {' '.join(command)}")
+        subprocess.run(command, check=True)
+        remove_node_with_npm()
     elif package_type.lower() == 'package':
         # Print and run yum commands for general packages
         update_command = ['yum', 'update', package, '-y']
