@@ -6,12 +6,12 @@ import subprocess
 def install_python_with_pip():
     # Install Python and pip using yum
     print("Installing Python and pip...")
-    subprocess.run(['yum', 'install', '-y', 'python3', 'python3-pip'], check=True)
+    subprocess.run(['yum', 'install', '-y', 'python3-pip'], check=True)
 
 def remove_python_with_pip():
     # Remove Python and pip using yum
     print("Removing Python and pip...")
-    subprocess.run(['yum', 'remove', '-y', 'python3', 'python3-pip'], check=True)
+    subprocess.run(['yum', 'remove', '-y', 'python3-pip'], check=True)
 
 def update_package(distro, package, fixed_version, package_type):
     # Remove leading and trailing whitespace from distro and package_type
