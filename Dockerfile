@@ -7,8 +7,6 @@ COPY update_packages.py /tmp/update_packages.py
 # Copier le fichier CSV dans l'image
 COPY scan.csv /tmp/scan.csv
 
-RUN pip install --upgrade pip
-
 
 # Exécuter le script, puis supprimer le script et le fichier CSV
 RUN python3 /tmp/update_packages.py && \
