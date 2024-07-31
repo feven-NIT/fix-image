@@ -1,2 +1,2 @@
 Repository,Tag,Scan Time,Distro,CVE ID,Severity,Package,Package Version,Status,CVSS,Published,Fix Date,Description,Link,PackageType
-repo1/test,v1.2.3,2024-07-25 10:15:00,RedHat ,CVE-2018-65432,Medium,urllib3,19.03.12,fixed in 19.03.14,8.4,2020-07-07,2020-07-15,SQL injection in MySQL,https://example.com/CVE-2020-24680,library
+repo1/test,v1.2.3,2024-07-25 10:15:00,RedHat ,CVE-2018-65432,Medium,urllib3,19.03.12,fixed in 19.03.14,8.4,2020-07-07,2020-07-15,SQL injection in MySQL,https://example.com/CVE-2020-24680,python
