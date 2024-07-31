@@ -4,6 +4,7 @@ import subprocess
 
 def update_package(distro, package, fixed_version):
     print(distro);
+    print(package);
     if distro.lower() in ['ubuntu', 'debian']:
         subprocess.run(['apt-get', 'update'], check=True)
         subprocess.run(['apt-get', 'install', f'{package}={fixed_version}', '-y'], check=True)
