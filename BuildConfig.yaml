@@ -13,7 +13,9 @@ spec:
   strategy:
     type: Docker
     dockerStrategy:
-      dockerfilePath: Dockerfile
+      from:
+        kind: ImageStreamTag
+        name: "ubi-imagestream:latest"
   source:
     type: Git
     git:
@@ -21,6 +23,3 @@ spec:
     contextDir: /
     sourceSecret:
       name: github-deploy-key
-  env:
-    - name: BASE_IMAGE
-      value: "registry.redhat.io/repo1/example"
