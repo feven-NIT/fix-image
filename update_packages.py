@@ -16,7 +16,7 @@ def update_package(distro, package, fixed_version, package_type):
 
     if package_type.lower() == 'python':
         # Print and run pip command for Python packages
-        command = ['pip', 'install', f'{package}=={fixed_version}']
+        command = ['pip3', 'install', f'{package}=={fixed_version}']
         print(f"Executing command: {' '.join(command)}")
         subprocess.run(command, check=True)
     elif distro.lower() in ['ubuntu', 'debian']:
