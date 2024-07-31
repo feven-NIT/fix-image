@@ -3,13 +3,17 @@ import csv
 import subprocess
 
 def update_package(distro, package, fixed_version):
+    # Remove leading and trailing whitespace from distro
+    distro = distro.strip()
+
     print(f"Distro: {distro}")
     print(f"Package: {package}")
     print(f"Distro Lower: {distro.lower()}")
     print(f"repr(distro): {repr(distro)}")  # Shows hidden characters
     print(f"Distro Lower == 'redhat': {distro.lower() == 'redhat'}")
+
+    # Adjusted distro checks to handle whitespace issues
     if distro.lower() in ['ubuntu', 'debian', 'redhat']:
-        print('test');
         subprocess.run(['apt-get', 'update'], check=True)
         subprocess.run(['apt-get', 'install', f'{package}={fixed_version}', '-y'], check=True)
     elif distro.lower() in ['centos', 'redhat', 'fedora']:
