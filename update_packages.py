@@ -6,7 +6,7 @@ def update_package(distro, package, fixed_version):
     print(distro);
     print(package);
     print(distro.lower())
-    if distro.lower() in ['ubuntu', 'debian']:
+    if distro.lower() in ['ubuntu', 'debian', 'redhat']:
         subprocess.run(['apt-get', 'update'], check=True)
         subprocess.run(['apt-get', 'install', f'{package}={fixed_version}', '-y'], check=True)
     elif distro.lower() in ['centos', 'redhat', 'fedora']:
