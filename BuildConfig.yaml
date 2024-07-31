@@ -1,13 +1,13 @@
 kind: BuildConfig
 apiVersion: build.openshift.io/v1
 metadata:
-  name: p02l01-go-app
+  name: fixed-build-config
   namespace: florian-ns
 spec:
   output:
     to:
       kind: DockerImage
-      name: "quay.io/neutron-it/p02l01-go-app:latest"
+      name: "quay.io/neutron-it/fixed-image:latest"
     pushSecret:
       name: florian-even-pull-secret
     strategy:
@@ -17,7 +17,7 @@ spec:
   source:
     type: Git
     git:
-      uri: "git@github.com:neutron-IT-organization/formation-openshift.git"
-    contextDir: /content/02_Interface_et_ligne_de_commande/sources/l01p02
+      uri: "git@github.com:feven-NIT/fix-image.git"
+    contextDir: /
     sourceSecret:
       name: github-deploy-key
