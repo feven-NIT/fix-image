@@ -5,10 +5,11 @@ import subprocess
 def update_package(distro, package, fixed_version):
     print(distro);
     print(package);
+    print(distro.lower)
     if distro.lower() in ['ubuntu', 'debian']:
         subprocess.run(['apt-get', 'update'], check=True)
         subprocess.run(['apt-get', 'install', f'{package}={fixed_version}', '-y'], check=True)
-    elif distro.lower() in ['centos', 'RedHat', 'fedora']:
+    elif distro.lower() in ['centos', 'redhat', 'fedora']:
         subprocess.run(['yum', 'update', package, '-y'], check=True)
         subprocess.run(['yum', 'install', f'{package}-{fixed_version}', '-y'], check=True)
     elif distro.lower() == 'arch':
