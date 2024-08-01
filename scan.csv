@@ -1,2 +1,6 @@
 Repository,Tag,Scan Time,Distro,CVE ID,Severity,Package,Package Version,Status,CVSS,Published,Fix Date,Description,Link
 repo1/test,v1.2.3,2024-07-25 10:15:00,RedHat,CVE-2018-65432,Medium,urllib3,1.26.5,fixed in 1.26.17,8.4,2020-07-07,2020-07-15,SQL injection in MySQL,https://example.com/CVE-2020-24680
+repo2/test,v2.3.4,2024-07-26 12:30:00,Ubuntu,CVE-2020-12345,High,requests,2.20.0,fixed in 2.25.1,9.1,2020-08-10,2020-08-20,Cross-site scripting (XSS) vulnerability,https://example.com/CVE-2020-12345
+repo3/test,v3.4.5,2024-07-27 14:45:00,Debian,CVE-2019-23456,Critical,kernel-headers,4.18.0,affected,9.8,2019-05-15,,Local privilege escalation,https://example.com/CVE-2019-23456
+repo4/test,v4.5.6,2024-07-28 16:00:00,Fedora,CVE-2021-34567,Low,color-convert,1.9.1,fixed in 1.9.3,5.4,2021-03-10,2021-03-15,Denial of service (DoS) attack,https://example.com/CVE-2021-34567
+repo5/test,v5.6.7,2024-07-29 17:15:00,CentOS,CVE-2022-45678,Medium,numpy,1.18.1,fixed in 1.19.5,7.2,2022-06-05,2022-06-10,Buffer overflow vulnerability,https://example.com/CVE-2022-45678
