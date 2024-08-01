@@ -57,6 +57,7 @@ update_package() {
 }
 
 main() {
+    echo "test"
     while IFS=, read -r distro package status cve_id; do
         if [ "$status" != "Status" ]; then  # Skip header
             if echo "$status" | grep -q "fixed in"; then
