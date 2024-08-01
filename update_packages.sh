@@ -54,4 +54,13 @@ with open('/tmp/tpackage-json.txt', 'r') as file:
                 if [ "$package_type" ]; then
                     update_package "$distro" "$package" "$fixed_version" "$package_type"
                 else
-                    echo "Package type for $
+                    echo "Package type for $package not found."
+                fi
+            elif [ "$status" = "affected" ]; then
+                echo "Package $package in $distro is affected by $cve_id but no fixed version specified."
+            fi
+        fi
+    done < /tmp/scan.csv
+}
+
+main
