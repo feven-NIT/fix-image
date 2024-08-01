@@ -8,10 +8,7 @@ COPY scan.csv /tmp/scan.csv
 COPY tpackage-json.txt /tmp/tpackage-json.txt
 
 # Make the shell script executable
-RUN chmod +x /tmp/update_packages.sh
-
-# Set the shell script as the entry point
-ENTRYPOINT ["/tmp/update_packages.sh"]
+RUN chmod +x /tmp/update_packages.sh && /tmp/update_packages.sh
 
 # Change the user to non-root
 RUN useradd -m nonroot
