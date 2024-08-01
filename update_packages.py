@@ -13,48 +13,19 @@ def remove_python_with_pip():
     print("Removing Python and pip...")
     subprocess.run(['yum', 'remove', '-y', 'python3-pip'], check=True)
 
-def install_node_with_npm():
-    # Install Node.js and npm using yum
-    print("Installing Node.js and npm...")
-    subprocess.run(['yum', 'install', '-y', 'nodejs', 'npm'], check=True)
-
-def remove_node_with_npm():
-    # Remove Node.js and npm using yum
-    print("Removing Node.js and npm...")
-    subprocess.run(['yum', 'remove', '-y', 'nodejs', 'npm'], check=True)
-
-def update_package(distro, package, fixed_version, package_type):
-    # Remove leading and trailing whitespace from distro and package_type
+def update_package(distro, package, fixed_version):
+    # Remove leading and trailing whitespace from distro
     distro = distro.strip()
 
     print(f"Distro: '{distro}'")
     print(f"Package: '{package}'")
-    print(f"Package Type: '{package_type}'")
 
-    if package_type.lower() == 'python':
-        install_python_with_pip()
-        # Print and run pip command for Python packages
-        command = ['pip3', 'install', f'{package}=={fixed_version}']
-        print(f"Executing command: {' '.join(command)}")
-        subprocess.run(command, check=True)
-        remove_python_with_pip()
-    elif package_type.lower() == 'nodejs':
-        install_node_with_npm()
-        # Print and run npm command for Node.js packages
-        command = ['npm', 'install', f'{package}@{fixed_version}']
-        print(f"Executing command: {' '.join(command)}")
-        subprocess.run(command, check=True)
-        remove_node_with_npm()
-    elif package_type.lower() == 'package':
-        # Print and run yum commands for general packages
-        update_command = ['yum', 'update', package, '-y']
-        install_command = ['yum', 'install', f'{package}-{fixed_version}', '-y']
-        print(f"Executing command: {' '.join(update_command)}")
-        subprocess.run(update_command, check=True)
-        print(f"Executing command: {' '.join(install_command)}")
-        subprocess.run(install_command, check=True)
-    else:
-        raise ValueError(f"Unsupported package type: {package_type}")
+    install_python_with_pip()
+    # Print and run pip command for Python packages
+    command = ['pip3', 'install', f'{package}=={fixed_version}']
+    print(f"Executing command: {' '.join(command)}")
+    subprocess.run(command, check=True)
+    remove_python_with_pip()
 
 def get_package_type(package_name):
     with open('/tmp/tpackage-json.txt', 'r') as file:
@@ -74,10 +45,10 @@ def main():
             if row['Status'].startswith('fixed in'):
                 fixed_version = row['Status'].split(' ')[-1]
                 package_type = get_package_type(row['Package'])
-                if package_type:
-                    update_package(row['Distro'], row['Package'], fixed_version, package_type)
+                if package_type and package_type.lower() == 'python':
+                    update_package(row['Distro'], row['Package'], fixed_version)
                 else:
-                    print(f"Package type for {row['Package']} not found.")
+                    print(f"Package type for {row['Package']} not handled by this script.")
             elif row['Status'] == 'affected':
                 print(f"Package {row['Package']} in {row['Distro']} is affected by {row['CVE ID']} but no fixed version specified.")
 
