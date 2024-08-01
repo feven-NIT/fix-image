@@ -57,4 +57,23 @@ update_package() {
 }
 
 main() {
-    while IFS=, read -r distro package status cve
+    while IFS=, read -r distro package status cve_id; do
+        if [ "$status" != "Status" ]; then  # Skip header
+            if echo "$status" | grep -q "fixed in"; then
+                fixed_version=$(echo "$status" | awk '{print $NF}')
+                package_type=$(get_package_type "$package")
+                if [ "$package_type" ]; then
+                    echo "Updating package $package of type $package_type in $distro to version $fixed_version."
+                    update_package "$distro" "$package" "$fixed_version" "$package_type"
+                else
+                    echo "Package type for $package not found."
+                fi
+            elif [ "$status" = "affected" ]; then
+                echo "Package $package in $distro is affected by $cve_id but no fixed version specified."
+            fi
+        fi
+    done < /tmp/scan.csv
+    echo "Package updates completed successfully."
+}
+
+main
