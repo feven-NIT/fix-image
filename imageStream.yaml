@@ -9,4 +9,4 @@ spec:
     - name: latest
       from:
         kind: DockerImage
-        name: registry.access.redhat.com/ubi8
+        name: registry.access.redhat.com/ubi9

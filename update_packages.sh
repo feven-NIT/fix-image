@@ -62,10 +62,10 @@ update_package() {
 # Main function to read the CSV and update packages
 main() {
     echo "Starting package updates..."
-    while IFS=, read -r repo tag scan_time distro cve_id severity package package_version status cvss published fix_date description link; do
+    while IFS=';' read -r repo tag scan_time distro cve_id status severity package package_version cvss published fix_date description link; do
         if [ "$status" != "Status" ]; then  # Skip header
             if echo "$status" | grep -q "fixed in"; then
-                fixed_version=$(echo "$status" | awk '{print $NF}')
+                fixed_version=$(echo "$status" | awk -F'fixed in ' '{print $2}' | awk -F', ' '{print $1}')
                 package_type=$(get_package_type "$package")
                 if [ "$package_type" ]; then
                     echo "Updating package $package of type $package_type in $distro to version $fixed_version."
