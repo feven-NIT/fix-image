@@ -61,6 +61,7 @@ main() {
     while IFS=, read -r distro package status cve_id; do
         echo "test2"
         if [ "$status" != "Status" ]; then  # Skip header
+            echo "test3"
             if echo "$status" | grep -q "fixed in"; then
                 fixed_version=$(echo "$status" | awk '{print $NF}')
                 package_type=$(get_package_type "$package")
