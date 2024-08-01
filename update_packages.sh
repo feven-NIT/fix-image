@@ -2,23 +2,15 @@
 
 set -e
 
+# Function to get the package type from the JSON file
 get_package_type() {
     package_name="$1"
-    python3 -c "
-import json
-with open('/tmp/tpackage-json.txt', 'r') as file:
-    data = json.load(file)
-    package_type = None
-    for repo, content in data.items():
-        for pkg_group in content['packages']:
-            for pkg in pkg_group['pkgs']:
-                if pkg['name'] == '$package_name':
-                    package_type = pkg_group['pkgsType']
-                    break
-    print(package_type)
-    "
+    jq -r --arg package_name "$package_name" '
+    .[] | .packages[] | select(.pkgs[].name == $package_name) | .pkgsType
+    ' /tmp/tpackage-json.txt
 }
 
+# Function to update the package based on its type
 update_package() {
     distro="$1"
     package="$2"
@@ -56,12 +48,11 @@ update_package() {
     esac
 }
 
+# Main function to read the CSV and update packages
 main() {
-    echo "test"
-    while IFS=, read -r distro package status cve_id; do
-        echo "test2"
+    echo "Starting package updates..."
+    while IFS=, read -r repo tag scan_time distro cve_id severity package package_version status cvss published fix_date description link; do
         if [ "$status" != "Status" ]; then  # Skip header
-            echo "test3"
             if echo "$status" | grep -q "fixed in"; then
                 fixed_version=$(echo "$status" | awk '{print $NF}')
                 package_type=$(get_package_type "$package")
