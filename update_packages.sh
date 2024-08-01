@@ -5,8 +5,19 @@ set -e
 # Function to get the package type from the JSON file
 get_package_type() {
     package_name="$1"
-    jq -r --arg package_name "$package_name" '
-    .[] | .packages[] | select(.pkgs[].name == $package_name) | .pkgsType
+    awk -v package_name="$package_name" '
+    BEGIN { package_type = "" }
+    /"pkgsType":/ { type = $2; gsub(/"/, "", type); gsub(/,/, "", type) }
+    /"name":/ {
+        name = $2;
+        gsub(/"/, "", name);
+        gsub(/,/, "", name);
+        if (name == package_name) {
+            package_type = type;
+            exit
+        }
+    }
+    END { print package_type }
     ' /tmp/tpackage-json.txt
 }
 
