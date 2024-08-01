@@ -59,6 +59,7 @@ update_package() {
 main() {
     echo "test"
     while IFS=, read -r distro package status cve_id; do
+        echo "test2"
         if [ "$status" != "Status" ]; then  # Skip header
             if echo "$status" | grep -q "fixed in"; then
                 fixed_version=$(echo "$status" | awk '{print $NF}')
