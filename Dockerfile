@@ -16,4 +16,3 @@ RUN /tmp/update_packages.sh
 # Change the user to non-root
 RUN useradd -m nonroot
 USER nonroot
-aad
