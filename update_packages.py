@@ -16,8 +16,22 @@ def get_package_type(package_name):
 def update_package(distro, package, fixed_version, package_type):
     if package_type == 'python':
         print(f"Updating Python package {package} to version {fixed_version}...")
+
+        # Check if pip3 is installed, if not install it
+        pip_installed = subprocess.run(['which', 'pip3'], capture_output=True, text=True)
+        if pip_installed.returncode != 0:
+            print("pip3 not found. Installing pip3...")
+            subprocess.run(['yum', 'install', '-y', 'python3-pip'], check=True)
+            print("pip3 installed successfully.")
+
         subprocess.run(['pip3', 'install', f'{package}=={fixed_version}'], check=True)
         print(f"Successfully updated Python package {package} to version {fixed_version}.")
+
+        # Remove pip3 after updating
+        print("Removing pip3...")
+        subprocess.run(['yum', 'remove', '-y', 'python3-pip'], check=True)
+        print("pip3 removed successfully.")
+
     elif package_type == 'nodejs':
         print("Installing Node.js and npm...")
         subprocess.run(['yum', 'install', '-y', 'nodejs', 'npm'], check=True)
@@ -28,6 +42,7 @@ def update_package(distro, package, fixed_version, package_type):
         print("Removing Node.js and npm...")
         subprocess.run(['yum', 'remove', '-y', 'nodejs', 'npm'], check=True)
         print("Successfully removed Node.js and npm.")
+
     elif package_type == 'package':
         print(f"Updating {package}...")
         subprocess.run(['yum', 'update', package, '-y'], check=True)
@@ -35,6 +50,7 @@ def update_package(distro, package, fixed_version, package_type):
         print(f"Installing {package} version {fixed_version}...")
         subprocess.run(['yum', 'install', f'{package}-{fixed_version}', '-y'], check=True)
         print(f"Successfully installed {package}-{fixed_version}.")
+
     else:
         print(f"Unsupported package type: {package_type}")
         exit(1)
