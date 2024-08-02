@@ -18,63 +18,73 @@ def install_pip_if_needed():
         print("pip3 not found. Installing pip3...")
         try:
             subprocess.run(['yum', 'install', '-y', 'python3-pip'], check=True)
-            print("Successfully installed pip3.")
         except subprocess.CalledProcessError as e:
             print(f"Error installing pip3: {e}")
             return False
+        print("Successfully installed pip3.")
     return True
 
 def update_package(distro, package, fixed_version, package_type):
-    try:
-        if package_type == 'python':
-            if not install_pip_if_needed():
-                print(f"Skipping Python package {package} update due to pip3 installation failure.")
-                return
-            print(f"Updating Python package {package} to version {fixed_version}...")
-            try:
-                subprocess.run(['pip3', 'install', f'{package}=={fixed_version}'], check=True)
-                print(f"Successfully updated Python package {package} to version {fixed_version}.")
-            except subprocess.CalledProcessError as e:
-                print(f"Error updating Python package {package} to version {fixed_version}: {e}")
-                print(f"The version {fixed_version} is not available for package {package}.")
+    if package_type == 'python':
+        if not install_pip_if_needed():
+            print(f"Skipping Python package {package} update due to pip3 installation failure.")
+            return
+        print(f"Updating Python package {package} to version {fixed_version}...")
+        try:
+            subprocess.run(['pip3', 'install', f'{package}=={fixed_version}'], check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"Error updating Python package {package} to version {fixed_version}: {e}")
+            print(f"The version {fixed_version} is not available for package {package}.")
+            return
+        print(f"Successfully updated Python package {package} to version {fixed_version}.")
 
-        elif package_type == 'nodejs':
-            print("Installing Node.js and npm...")
-            try:
-                subprocess.run(['yum', 'install', '-y', 'nodejs', 'npm'], check=True)
-                print("Successfully installed Node.js and npm.")
-                print(f"Updating {package} to version {fixed_version}...")
-                try:
-                    subprocess.run(['npm', 'install', f'{package}@{fixed_version}'], check=True)
-                    print(f"Successfully updated {package} to version {fixed_version}.")
-                except subprocess.CalledProcessError as e:
-                    print(f"Error updating {package} to version {fixed_version}: {e}")
-                    print(f"The version {fixed_version} is not available for package {package}.")
-            except subprocess.CalledProcessError as e:
-                print(f"Error installing Node.js and npm: {e}")
-            finally:
-                print("Removing Node.js and npm...")
-                subprocess.run(['yum', 'remove', '-y', 'nodejs', 'npm'], check=True)
-                print("Successfully removed Node.js and npm.")
+    elif package_type == 'nodejs':
+        print("Installing Node.js and npm...")
+        try:
+            subprocess.run(['yum', 'install', '-y', 'nodejs', 'npm'], check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"Error installing Node.js and npm: {e}")
+            return
+        print("Successfully installed Node.js and npm.")
 
-        elif package_type == 'package':
-            print(f"Updating {package}...")
-            try:
-                subprocess.run(['yum', 'update', package, '-y'], check=True)
-                print(f"Successfully updated {package}.")
-                print(f"Installing {package} version {fixed_version}...")
-                subprocess.run(['yum', 'install', f'{package}-{fixed_version}', '-y'], check=True)
-                print(f"Successfully installed {package}-{fixed_version}.")
-            except subprocess.CalledProcessError as e:
-                print(f"Error installing {package} version {fixed_version}: {e}")
-                print(f"The version {fixed_version} is not available for package {package}.")
+        print(f"Updating {package} to version {fixed_version}...")
+        try:
+            subprocess.run(['npm', 'install', f'{package}@{fixed_version}'], check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"Error updating {package} to version {fixed_version}: {e}")
+            print(f"The version {fixed_version} is not available for package {package}.")
+            return
+        print(f"Successfully updated {package} to version {fixed_version}.")
 
-        else:
-            print(f"Unsupported package type: {package_type}")
-            exit(1)
-    except subprocess.CalledProcessError as e:
-        print(f"Error: {e}")
-        print(f"The fixed version {fixed_version} for {package} is not available.")
+        print("Removing Node.js and npm...")
+        try:
+            subprocess.run(['yum', 'remove', '-y', 'nodejs', 'npm'], check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"Error removing Node.js and npm: {e}")
+            return
+        print("Successfully removed Node.js and npm.")
+
+    elif package_type == 'package':
+        print(f"Updating {package}...")
+        try:
+            subprocess.run(['yum', 'update', package, '-y'], check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"Error updating {package}: {e}")
+            return
+        print(f"Successfully updated {package}.")
+
+        print(f"Installing {package} version {fixed_version}...")
+        try:
+            subprocess.run(['yum', 'install', f'{package}-{fixed_version}', '-y'], check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"Error installing {package} version {fixed_version}: {e}")
+            print(f"The version {fixed_version} is not available for package {package}.")
+            return
+        print(f"Successfully installed {package}-{fixed_version}.")
+
+    else:
+        print(f"Unsupported package type: {package_type}")
+        exit(1)
 
 def main():
     print("Starting package updates...")
