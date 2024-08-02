@@ -51,4 +51,49 @@ def update_package(distro, package, fixed_version, package_type):
                     print(f"Error updating {package} to version {fixed_version}: {e}")
                     print(f"The version {fixed_version} is not available for package {package}.")
             except subprocess.CalledProcessError as e:
-                print(f"Error insta
+                print(f"Error installing Node.js and npm: {e}")
+            finally:
+                print("Removing Node.js and npm...")
+                subprocess.run(['yum', 'remove', '-y', 'nodejs', 'npm'], check=True)
+                print("Successfully removed Node.js and npm.")
+
+        elif package_type == 'package':
+            print(f"Updating {package}...")
+            try:
+                subprocess.run(['yum', 'update', package, '-y'], check=True)
+                print(f"Successfully updated {package}.")
+                print(f"Installing {package} version {fixed_version}...")
+                subprocess.run(['yum', 'install', f'{package}-{fixed_version}', '-y'], check=True)
+                print(f"Successfully installed {package}-{fixed_version}.")
+            except subprocess.CalledProcessError as e:
+                print(f"Error installing {package} version {fixed_version}: {e}")
+                print(f"The version {fixed_version} is not available for package {package}.")
+
+        else:
+            print(f"Unsupported package type: {package_type}")
+            exit(1)
+    except subprocess.CalledProcessError as e:
+        print(f"Error: {e}")
+        print(f"The fixed version {fixed_version} for {package} is not available.")
+
+def main():
+    print("Starting package updates...")
+    with open('/tmp/scan.csv') as csvfile:
+        reader = csv.DictReader(csvfile, delimiter=';')
+        for row in reader:
+            status = row['Status']
+            if status != 'Status':  # Skip header
+                if 'fixed in' in status:
+                    fixed_version = status.split('fixed in ')[1].split(', ')[0]
+                    package_type = get_package_type(row['Package'])
+                    if package_type:
+                        print(f"Updating package {row['Package']} of type {package_type} in {row['Distro']} to version {fixed_version}.")
+                        update_package(row['Distro'], row['Package'], fixed_version, package_type)
+                    else:
+                        print(f"Package type for {row['Package']} not found.")
+                elif status == 'affected':
+                    print(f"Package {row['Package']} in {row['Distro']} is affected by {row['CVE ID']} but no fixed version specified.")
+    print("Package updates completed successfully.")
+
+if __name__ == "__main__":
+    main()
