@@ -1,6 +1,7 @@
 import json
 import csv
 import subprocess
+from datetime import datetime, timedelta
 
 def get_package_type(package_name):
     with open('/tmp/tpackage-json.txt') as f:
@@ -32,59 +33,61 @@ def update_package(distro, package, fixed_version, package_type):
         print(f"Updating Python package {package} to version {fixed_version}...")
         try:
             subprocess.run(['pip3', 'install', f'{package}=={fixed_version}'], check=True)
+            print(f"Successfully updated Python package {package} to version {fixed_version}.")
         except subprocess.CalledProcessError as e:
             print(f"Error updating Python package {package} to version {fixed_version}: {e}")
             print(f"The version {fixed_version} is not available for package {package}.")
-            return
-        print(f"Successfully updated Python package {package} to version {fixed_version}.")
 
     elif package_type == 'nodejs':
         print("Installing Node.js and npm...")
         try:
             subprocess.run(['yum', 'install', '-y', 'nodejs', 'npm'], check=True)
+            print("Successfully installed Node.js and npm.")
         except subprocess.CalledProcessError as e:
             print(f"Error installing Node.js and npm: {e}")
             return
-        print("Successfully installed Node.js and npm.")
 
         print(f"Updating {package} to version {fixed_version}...")
         try:
             subprocess.run(['npm', 'install', f'{package}@{fixed_version}'], check=True)
+            print(f"Successfully updated {package} to version {fixed_version}.")
         except subprocess.CalledProcessError as e:
             print(f"Error updating {package} to version {fixed_version}: {e}")
             print(f"The version {fixed_version} is not available for package {package}.")
-            return
-        print(f"Successfully updated {package} to version {fixed_version}.")
 
         print("Removing Node.js and npm...")
         try:
             subprocess.run(['yum', 'remove', '-y', 'nodejs', 'npm'], check=True)
+            print("Successfully removed Node.js and npm.")
         except subprocess.CalledProcessError as e:
             print(f"Error removing Node.js and npm: {e}")
-            return
-        print("Successfully removed Node.js and npm.")
 
     elif package_type == 'package':
         print(f"Updating {package}...")
         try:
             subprocess.run(['yum', 'update', package, '-y'], check=True)
+            print(f"Successfully updated {package}.")
         except subprocess.CalledProcessError as e:
             print(f"Error updating {package}: {e}")
             return
-        print(f"Successfully updated {package}.")
 
         print(f"Installing {package} version {fixed_version}...")
         try:
             subprocess.run(['yum', 'install', f'{package}-{fixed_version}', '-y'], check=True)
+            print(f"Successfully installed {package}-{fixed_version}.")
         except subprocess.CalledProcessError as e:
             print(f"Error installing {package} version {fixed_version}: {e}")
             print(f"The version {fixed_version} is not available for package {package}.")
-            return
-        print(f"Successfully installed {package}-{fixed_version}.")
-
     else:
         print(f"Unsupported package type: {package_type}")
         exit(1)
+
+def should_update(fix_date_str, severity):
+    if severity.lower() == 'critical':
+        return True
+    fix_date = datetime.strptime(fix_date_str, '%Y-%m-%d %H:%M:%S')
+    three_months_ago = datetime.now() - timedelta(days=90)
+    return fix_date <= three_months_ago
 
 def main():
     print("Starting package updates...")
@@ -96,11 +99,13 @@ def main():
                 if 'fixed in' in status:
                     fixed_version = status.split('fixed in ')[1].split(', ')[0]
                     package_type = get_package_type(row['Package'])
-                    if package_type:
+                    severity = row['Severity']
+                    fix_date = row['Fix Date']
+                    if package_type and should_update(fix_date, severity):
                         print(f"Updating package {row['Package']} of type {package_type} in {row['Distro']} to version {fixed_version}.")
                         update_package(row['Distro'], row['Package'], fixed_version, package_type)
                     else:
-                        print(f"Package type for {row['Package']} not found.")
+                        print(f"Package {row['Package']} fix is either too recent or not critical.")
                 elif status == 'affected':
                     print(f"Package {row['Package']} in {row['Distro']} is affected by {row['CVE ID']} but no fixed version specified.")
     print("Package updates completed successfully.")
