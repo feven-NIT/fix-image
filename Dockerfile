@@ -13,11 +13,10 @@ COPY tpackage-json.txt /tmp/tpackage-json.txt
 USER root
 
 # Use microdnf if REPO_FOLDER contains "micro" or "minimal", otherwise use yum
-RUN if echo "$REPO_FOLDER" | grep -q -E "micro|minimal"; then \
-    microdnf install -y python3-pip; \
-    else \
-    yum install -y python3-pip; \
-    fi
+RUN case "$REPO_FOLDER" in \
+    *micro*|*minimal*) microdnf install -y python3-pip ;; \
+    *) yum install -y python3-pip ;; \
+    esac
 
 # Change the user to non-root
 RUN useradd -m nonroot
@@ -28,9 +27,8 @@ RUN python3 /tmp/update_packages.py
 
 # Switch back to root to clean up
 USER root
-RUN if echo "$REPO_FOLDER" | grep -q -E "micro|minimal"; then \
-    microdnf remove -y python3-pip; \
-    else \
-    yum remove -y python3-pip; \
-    fi
+RUN case "$REPO_FOLDER" in \
+    *micro*|*minimal*) microdnf remove -y python3-pip ;; \
+    *) yum remove -y python3-pip ;; \
+    esac
 USER nonroot
