@@ -1,7 +1,14 @@
 import json
 import csv
+import os
 import subprocess
 from datetime import datetime, timedelta
+
+# Determine the package manager to use
+REPO_FOLDER = os.getenv('REPO_FOLDER', '')
+USE_MICRODNF = 'micro' in REPO_FOLDER or 'minimal' in REPO_FOLDER
+PACKAGE_MANAGER_INSTALL = 'microdnf' if USE_MICRODNF else 'yum'
+PACKAGE_MANAGER_REMOVE = 'microdnf' if USE_MICRODNF else 'yum'
 
 def get_package_type(package_name):
     with open('/tmp/tpackage-json.txt') as f:
@@ -18,7 +25,7 @@ def install_pip_if_needed():
     if pip_installed.returncode != 0:
         print("pip3 not found. Installing pip3...")
         try:
-            subprocess.run(['yum', 'install', '-y', 'python3-pip'], check=True)
+            subprocess.run([PACKAGE_MANAGER_INSTALL, 'install', '-y', 'python3-pip'], check=True)
         except subprocess.CalledProcessError as e:
             print(f"Error installing pip3: {e}")
             return False
@@ -41,7 +48,7 @@ def update_package(distro, package, fixed_version, package_type):
     elif package_type == 'nodejs':
         print("Installing Node.js and npm...")
         try:
-            subprocess.run(['yum', 'install', '-y', 'nodejs', 'npm'], check=True)
+            subprocess.run([PACKAGE_MANAGER_INSTALL, 'install', '-y', 'nodejs', 'npm'], check=True)
             print("Successfully installed Node.js and npm.")
         except subprocess.CalledProcessError as e:
             print(f"Error installing Node.js and npm: {e}")
@@ -57,7 +64,7 @@ def update_package(distro, package, fixed_version, package_type):
 
         print("Removing Node.js and npm...")
         try:
-            subprocess.run(['yum', 'remove', '-y', 'nodejs', 'npm'], check=True)
+            subprocess.run([PACKAGE_MANAGER_REMOVE, 'remove', '-y', 'nodejs', 'npm'], check=True)
             print("Successfully removed Node.js and npm.")
         except subprocess.CalledProcessError as e:
             print(f"Error removing Node.js and npm: {e}")
@@ -65,7 +72,7 @@ def update_package(distro, package, fixed_version, package_type):
     elif package_type == 'package':
         print(f"Updating {package}...")
         try:
-            subprocess.run(['yum', 'update', package, '-y'], check=True)
+            subprocess.run([PACKAGE_MANAGER_INSTALL, 'update', package, '-y'], check=True)
             print(f"Successfully updated {package}.")
         except subprocess.CalledProcessError as e:
             print(f"Error updating {package}: {e}")
@@ -73,7 +80,7 @@ def update_package(distro, package, fixed_version, package_type):
 
         print(f"Installing {package} version {fixed_version}...")
         try:
-            subprocess.run(['yum', 'install', f'{package}-{fixed_version}', '-y'], check=True)
+            subprocess.run([PACKAGE_MANAGER_INSTALL, 'install', f'{package}-{fixed_version}', '-y'], check=True)
             print(f"Successfully installed {package}-{fixed_version}.")
         except subprocess.CalledProcessError as e:
             print(f"Error installing {package} version {fixed_version}: {e}")
