@@ -3,6 +3,7 @@ import csv
 import os
 import subprocess
 from datetime import datetime, timedelta
+import re
 
 # Determine the package manager to use
 REPO_FOLDER = os.getenv('REPO_FOLDER', '')
@@ -32,10 +33,14 @@ def install_pip_if_needed():
         print("Successfully installed pip3.")
     return True
 
+def extract_numeric_version(version):
+    """Extracts the numeric part of a version string for comparison."""
+    return [int(part) for part in re.findall(r'\d+', version)]
+
 def compare_versions(version1, version2):
-    # Split the version by '.' and compare each part as an integer
-    v1_parts = list(map(int, version1.split('.')))
-    v2_parts = list(map(int, version2.split('.')))
+    """Compares two version strings based on their numeric components."""
+    v1_parts = extract_numeric_version(version1)
+    v2_parts = extract_numeric_version(version2)
 
     # Compare each part of the version
     for v1, v2 in zip(v1_parts, v2_parts):
