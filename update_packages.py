@@ -32,6 +32,35 @@ def install_pip_if_needed():
         print("Successfully installed pip3.")
     return True
 
+def compare_versions(version1, version2):
+    # Split the version by '.' and compare each part as an integer
+    v1_parts = list(map(int, version1.split('.')))
+    v2_parts = list(map(int, version2.split('.')))
+
+    # Compare each part of the version
+    for v1, v2 in zip(v1_parts, v2_parts):
+        if v1 > v2:
+            return 1
+        elif v1 < v2:
+            return -1
+
+    # If we reach here, it means the common parts are the same, now compare length
+    if len(v1_parts) > len(v2_parts):
+        return 1
+    elif len(v1_parts) < len(v2_parts):
+        return -1
+    else:
+        return 0
+
+def get_closest_version(current_version, fixed_versions):
+    closest_version = None
+    for fixed_version in fixed_versions:
+        # Only consider versions greater than the current version
+        if compare_versions(fixed_version, current_version) > 0:
+            if closest_version is None or compare_versions(fixed_version, closest_version) < 0:
+                closest_version = fixed_version
+    return closest_version
+
 def update_package(distro, package, fixed_version, package_type):
     if package_type == 'python':
         if not install_pip_if_needed():
@@ -104,15 +133,21 @@ def main():
             status = row['Status']
             if status != 'Status':  # Skip header
                 if 'fixed in' in status:
-                    fixed_version = status.split('fixed in ')[1].split(', ')[0]
-                    package_type = get_package_type(row['Package'])
-                    severity = row['Severity']
-                    fix_date = row['Fix Date']
-                    if package_type and should_update(fix_date, severity):
-                        print(f"Updating package {row['Package']} of type {package_type} in {row['Distro']} to version {fixed_version}.")
-                        update_package(row['Distro'], row['Package'], fixed_version, package_type)
+                    fixed_versions = status.split('fixed in ')[1].split(', ')
+                    package_version = row['Package Version']
+                    closest_version = get_closest_version(package_version, fixed_versions)
+
+                    if closest_version:
+                        package_type = get_package_type(row['Package'])
+                        severity = row['Severity']
+                        fix_date = row['Fix Date']
+                        if package_type and should_update(fix_date, severity):
+                            print(f"Updating package {row['Package']} of type {package_type} in {row['Distro']} to version {closest_version}.")
+                            update_package(row['Distro'], row['Package'], closest_version, package_type)
+                        else:
+                            print(f"Package {row['Package']} fix is either too recent or not critical.")
                     else:
-                        print(f"Package {row['Package']} fix is either too recent or not critical.")
+                        print(f"No newer fixed version found for package {row['Package']}.")
                 elif status == 'affected':
                     print(f"Package {row['Package']} in {row['Distro']} is affected by {row['CVE ID']} but no fixed version specified.")
     print("Package updates completed successfully.")
