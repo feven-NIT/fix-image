@@ -11,13 +11,13 @@ USE_MICRODNF = 'micro' in REPO_FOLDER or 'minimal' in REPO_FOLDER
 PACKAGE_MANAGER_INSTALL = 'microdnf' if USE_MICRODNF else 'yum'
 PACKAGE_MANAGER_REMOVE = 'microdnf' if USE_MICRODNF else 'yum'
 
-def get_package_type(package_name):
+def get_package_type_and_path(package_name, package_version):
     with open('/tmp/tpackage-json.txt') as f:
         data = json.load(f)
         for repo, repo_data in data.items():
             for package_group in repo_data['packages']:
                 for pkg in package_group['pkgs']:
-                    if pkg['name'] == package_name:
+                    if pkg['name'] == package_name and pkg['version'] == package_version:
                         return package_group['pkgsType'], pkg['path']
     return None, None
 
@@ -149,7 +149,7 @@ def main():
                     closest_version = get_closest_version(package_version, fixed_versions)
 
                     if closest_version:
-                        package_type, original_path = get_package_type(row['Package'])
+                        package_type, original_path = get_package_type_and_path(row['Package'], package_version)
                         severity = row['Severity']
                         fix_date = row['Fix Date']
                         if package_type and should_update(fix_date, severity):
